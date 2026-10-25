@@ -8,15 +8,19 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 5000;
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+const CLIENT_URLS = (process.env.CLIENT_URL || 'http://localhost:5173')
+  .split(',')
+  .map((url) => url.trim())
+  .filter(Boolean);
 
 const app = express();
 const server = http.createServer(app);
 
 // Configure Socket.IO with CORS
 const io = new SocketIOServer(server, {
+  transports: ['polling', 'websocket'],
   cors: {
-    origin: CLIENT_URL,
+    origin: CLIENT_URLS,
     methods: ['GET', 'POST'],
     credentials: true,
   },
@@ -25,7 +29,7 @@ const io = new SocketIOServer(server, {
 // Middleware
 app.use(
   cors({
-    origin: CLIENT_URL,
+    origin: CLIENT_URLS,
     credentials: true,
   })
 );
@@ -70,6 +74,6 @@ server.listen(PORT, () => {
   console.log(`  Skribbl Arena Backend Server Started`);
   console.log(`  Port: http://localhost:${PORT}`);
   console.log(`  Health Check: http://localhost:${PORT}/api/health`);
-  console.log(`  CORS Allowed Origin: ${CLIENT_URL}`);
+  console.log(`  CORS Allowed Origins: ${CLIENT_URLS.join(', ')}`);
   console.log(`=========================================`);
 });

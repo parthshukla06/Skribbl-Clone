@@ -120,6 +120,12 @@ cd backend && npm run build
 cd frontend && npm run build
 ```
 
+### Deployment configuration
+
+Set `VITE_BACKEND_URL` in the frontend build environment to the backend origin, for example `https://skribbl-clone-2892.onrender.com`. Set `CLIENT_URL` on the backend to the deployed frontend origin, for example `https://skribbl-clone-lake.vercel.app`; multiple comma-separated origins are supported.
+
+The client starts with Socket.IO polling and upgrades to WebSocket when available, and continues retrying after connection failures. Render free-tier services may sleep while idle, so an initial timeout during a cold start can occur even when the Socket.IO configuration is correct.
+
 To run the production backend build:
 ```bash
 cd backend
